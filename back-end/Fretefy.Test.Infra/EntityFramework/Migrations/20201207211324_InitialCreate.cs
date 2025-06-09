@@ -154,6 +154,7 @@ namespace Fretefy.Test.Infra.EntityFramework.Migrations
                 table: "Cidade",
                 columns: new[] { "Id", "Nome", "UF" },
                 values: new object[] { new Guid("6ab3cbd8-bcdf-4287-bee3-5885fb656d08"), "Palmas", "TO" });
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

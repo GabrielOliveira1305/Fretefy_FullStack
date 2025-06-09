@@ -1,0 +1,18 @@
+/* Estilo para linhas da tabela */
+.table tr {
+  transition: background-color 0.2s;
+}
+
+.table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Estilo para a área expandida */
+.expanded-row {
+  background-color: #f8f9fa;
+}
+
+/* Impede que o menu de ações dispare o toggle */
+.btn {
+  pointer-events: auto;
+}

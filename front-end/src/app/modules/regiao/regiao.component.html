@@ -1,3 +1,108 @@
-<p>
-  regiao works!
-</p>
+<div class="container">
+  <h2 class="text-center">Regiões</h2>
+
+  <div class="mb-3 text-end">
+    <button class="btn btn-primary mx-3" (click)="exportarExcel()">Exportar</button>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cadastrarModal" (click)="setAcao('Cadastrar')">+ Cadastrar</button>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="d-none">ID</th>
+        <th>Nome</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let regiao of regioes">
+        <td class="d-none">{{ regiao.id }}</td>
+        <td>{{ regiao.nome }}</td>
+        <td>
+          <span [class.text-success]="regiao.status" [class.text-danger]="!regiao.status">
+            {{ regiao.status ? 'Ativo' : 'Inativo' }}
+          </span>
+        </td>
+        <td>
+          <div class="dropdown">
+            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" (click)="setAcao('Status'); salvarRegiao(regiao)">
+                <i class="bi {{ regiao.status ? 'bi-toggle-off' : 'bi-toggle-on' }} me-2"></i>
+                {{ regiao.status ? 'Desativar' : 'Ativar' }}
+              </a></li>
+              <li><a class="dropdown-item" (click)="editarRegiao(regiao)">
+                <i class="bi bi-pencil-square me-2"></i>
+                Editar
+              </a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="cadastrarModal" tabindex="-1" aria-labelledby="cadastrarModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">{{acao}} região</h5>
+        <button type="button" id="btn-close" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>      
+      <form [formGroup]="formRegiao">
+        <div class="modal-body">
+          <div class="mb-4">
+            <label class="form-label fw-bold">
+              Nome da região <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control border rounded-2"
+                  formControlName="nome"
+                  placeholder="Digite o nome da região">
+            <div *ngIf="formRegiao.get('nome').touched && formRegiao.get('nome').invalid" class="text-danger small mt-1">
+              <div *ngIf="formRegiao.get('nome').hasError('required')">Nome é obrigatório.</div>
+              <div *ngIf="formRegiao.get('nome').hasError('maxlength')">Máximo 100 caracteres.</div>
+              <div *ngIf="formRegiao.get('nome').hasError('nomeDuplicado')">Nome já está em uso.</div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <h6 class="fw-bold mb-3">Locais da região</h6>
+
+          <div formArrayName="cidades">
+            <div *ngFor="let cidadeCtrl of cidades.controls; let i = index" [formGroupName]="i" class="mb-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-medium">Cidade</span>
+                <select class="form-select flex-grow-1 border rounded-2"
+                        formControlName="id">
+                  <option [ngValue]="null" disabled>Selecione uma cidade</option>
+                  <option *ngFor="let cidade of cidadesDisponiveis" [ngValue]="cidade.id">
+                    {{ cidade.nome }} - {{ cidade.uf }}
+                  </option>
+                </select>
+                <button type="button" class="btn btn-sm btn-outline-danger p-1"
+                        (click)="removerCidade(i)" [disabled]="cidades.controls.length <= 1"
+                        title="Remover cidade">✕</button>
+              </div>
+              <div *ngIf="cidadeCtrl.invalid && (cidadeCtrl.touched || cidadeCtrl.dirty)" class="text-danger small mt-1 ms-5">
+                Cidade é obrigatória.
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary btn-sm mt-2" (click)="adicionarCidade()">
+            + Adicionar local
+          </button>
+        </div>
+
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="salvarRegiao()" [disabled]="formRegiao.invalid">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
